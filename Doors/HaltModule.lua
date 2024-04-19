@@ -37,7 +37,7 @@ function v1.stuff(p1, p2, p3)
 		local l__PrimaryPart__5 = l__Character__4.PrimaryPart;
 		local l__LookVector__6 = p2.RoomEntrance.CFrame.LookVector;
 		local v7 = Ray.new(p2.RoomEntrance.Position + Vector3.new(0, 1, 0), l__LookVector__6);
-		local l__Jumpscare_Shade__8 = l__LocalPlayer__3.PlayerGui.MainUI.Jumpscare_Shade;
+		local l__Jumpscare_Shade__8 = l__LocalPlayer__3.PlayerGui.MainUI.Jumpscare.Jumpscare_Shade;
 		l__Jumpscare_Shade__8.Visible = true;
 		l__LocalPlayer__3.Character:SetPrimaryPartCFrame(CFrame.new(p2.RoomEntrance.CFrame.Position + l__LookVector__6 * 10, p2.RoomEntrance.CFrame.Position + l__LookVector__6 * 20));
 		wait(0.5);
