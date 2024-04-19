@@ -35,11 +35,11 @@ function v1.stuff(p1, p2, p3)
 		local l__LocalPlayer__3 = game.Players.LocalPlayer;
 		local l__Character__4 = l__LocalPlayer__3.Character;
 		local l__PrimaryPart__5 = l__Character__4.PrimaryPart;
-		local l__LookVector__6 = p2.RoomStart.CFrame.LookVector;
-		local v7 = Ray.new(p2.RoomStart.Position + Vector3.new(0, 1, 0), l__LookVector__6);
+		local l__LookVector__6 = p2.RoomEntrance.CFrame.LookVector;
+		local v7 = Ray.new(p2.RoomEntrance.Position + Vector3.new(0, 1, 0), l__LookVector__6);
 		local l__Jumpscare_Shade__8 = l__LocalPlayer__3.PlayerGui.MainUI.Jumpscare_Shade;
 		l__Jumpscare_Shade__8.Visible = true;
-		l__LocalPlayer__3.Character:SetPrimaryPartCFrame(CFrame.new(p2.RoomStart.CFrame.Position + l__LookVector__6 * 10, p2.RoomStart.CFrame.Position + l__LookVector__6 * 20));
+		l__LocalPlayer__3.Character:SetPrimaryPartCFrame(CFrame.new(p2.RoomEntrance.CFrame.Position + l__LookVector__6 * 10, p2.RoomEntrance.CFrame.Position + l__LookVector__6 * 20));
 		wait(0.5);
 		local v9 = game:GetService("ReplicatedStorage").Entities:WaitForChild("Shade"):Clone();
 		v9.CFrame = p1.cam.CFrame + Vector3.new(0, 1000, 0);
@@ -93,8 +93,8 @@ function v1.stuff(p1, p2, p3)
 		while true do
 			task.wait(0.016666666666666666);
 			local l__Magnitude__14 = (v9.Position - l__PrimaryPart__5.Position).Magnitude;
-			local l__Magnitude__15 = (l__PrimaryPart__5.Position - p2.RoomEnd.Position).Magnitude;
-			local l__Magnitude__16 = (l__PrimaryPart__5.Position - p2.RoomEnd.Position).Magnitude;
+			local l__Magnitude__15 = (l__PrimaryPart__5.Position - p2.RoomExit.Position).Magnitude;
+			local l__Magnitude__16 = (l__PrimaryPart__5.Position - p2.RoomExit.Position).Magnitude;
 			l__Jumpscare_Shade__8.Static.Position = UDim2.new(math.random(0, 1000) / 1000, 0, math.random(0, 1000) / 1000, 0);
 			l__Jumpscare_Shade__8.Static.Rotation = 180 * math.random(0, 1);
 			local v17
