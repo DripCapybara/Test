@@ -1,4 +1,4 @@
-local Rebound = Instance.new('Model', workspace)
+local Rebound = Instance.new('Model')
 local Speed = Instance.new('IntValue', Rebound)
 local ShakeStrength = Instance.new('IntValue', Rebound)
 local RoomInside = Instance.new('IntValue', Rebound)
