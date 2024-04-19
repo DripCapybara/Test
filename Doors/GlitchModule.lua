@@ -14,13 +14,13 @@ function v1.stuff(p1, p2, p3)
 			u2 = math.random(1, 500);
 		end;
 		u2 = Random.new(u2);
-		local l__LocalPlayer__3 = game.Players.Lo;
+		local l__LocalPlayer__3 = game.Players.LocalPlayer;
 		local l__PrimaryPart__4 = l__LocalPlayer__3.Character.PrimaryPart;
 		local v5 = (p1.cam.CFrame.LookVector * Vector3.new(1, 0, 1)).unit * -1;
 		local l__p__6 = p1.cam.CFrame.p;
-		if not tonumber(p2.Name) or not l__LocalPlayer__3:GetAttribute("CurrentRoom") then
-			return;
-		end;
+		--if not tonumber(p2.Name) or not l__LocalPlayer__3:GetAttribute("CurrentRoom") then
+		--	return;
+		--end;
 		l__TweenService__1:Create(p1.cam, TweenInfo.new(0.9, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut), {
 			CFrame = CFrame.new(l__p__6 + v5 * 2, l__p__6 + v5 * 10)
 		}):Play();
@@ -50,22 +50,25 @@ function v1.stuff(p1, p2, p3)
 			task.spawn(function()
 				for v10, v11 in pairs(v9:GetDescendants()) do
 					if v11:IsA("BasePart") then
+					s1=v11.CFrame
+					s2=v11.BrickColor
+					s3=v11.Transparency
 						delay(math.random(10, 60) / 100, function()
 							v11.CFrame = v11.CFrame + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10));
 							v11.BrickColor = BrickColor.Random();
 							v11.Transparency = 0.3;
 						end);
 						wait(1.4);
-						v11.CFrame = v11.CFrame;
-						v11.BrickColor = v11.BrickColor;
-						v11.Transparency = v11.Transparency;
+						v11.CFrame = s1
+						v11.BrickColor = s2
+						v11.Transparency = s3
 					end;
 				end;
 			end);
 		end;
 		local u3 = tick() + 2;
 		task.spawn(function()
-			local v12 = l__LocalPlayer__3.PlayerGui.MainUI.GlitchEffect:Clone();
+			local v12 = l__LocalPlayer__3.PlayerGui.MainUI.MainFrame.GlitchEffect:Clone();
 			for v13 = 1, 60 do
 				for v14 = 1, 8 do
 					local v15 = v12:Clone();
@@ -87,10 +90,10 @@ function v1.stuff(p1, p2, p3)
 		v7.AnimationController:LoadAnimation(v7.Animations.Attack):Play(0);
 		game.Lighting.Ambience_Glitch.Enabled = true;
 		task.wait(0.05);
-		l__LocalPlayer__3.PlayerGui.MainUI.GlitchScreen.Visible = true;
+		l__LocalPlayer__3.PlayerGui.MainUI.MainFrame.GlitchScreen.Visible = true;
 		task.wait(0.1);
 		task.wait(0.6)
-		l__LocalPlayer__3.PlayerGui.MainUI.GlitchScreen.Visible = false;
+		l__LocalPlayer__3.PlayerGui.MainUI.MainFrame.GlitchScreen.Visible = false;
 		v7:Destroy();
 		p1.hideplayers = 0;
 		l__TweenService__1:Create(game:GetService("Lighting"), TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
