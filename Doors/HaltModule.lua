@@ -49,7 +49,7 @@ function v1.stuff(p1, p2, p3)
 			local u5 = nil;
 			spawn(function()
 				if u5 then
-					game:GetService("ReplicatedStorage"):FindFirstChild("Bricks"):FindFirstChild("ShadeResult"):FireServer(u5);
+					--game:GetService("ReplicatedStorage"):FindFirstChild("Bricks"):FindFirstChild("ShadeResult"):FireServer(u5);
 				end;
 				if u3 == l__LookVector__6 then
 					u4 = tick() + math.random(30, 70) / 10;
@@ -136,7 +136,7 @@ function v1.stuff(p1, p2, p3)
 				local u8 = true;
 				spawn(function()
 					if u8 then
-						game:GetService("ReplicatedStorage"):FindFirstChild("Bricks"):FindFirstChild("ShadeResult"):FireServer(u8);
+						--game:GetService("ReplicatedStorage"):FindFirstChild("Bricks"):FindFirstChild("ShadeResult"):FireServer(u8);
 					end;
 					if u3 == l__LookVector__6 then
 						u4 = tick() + math.random(30, 70) / 10;
@@ -191,7 +191,7 @@ function v1.stuff(p1, p2, p3)
 				local u9 = false;
 				spawn(function()
 					if u9 then
-						game:GetService("ReplicatedStorage"):FindFirstChild("Bricks"):FindFirstChild("ShadeResult"):FireServer(u9);
+						--game:GetService("ReplicatedStorage"):FindFirstChild("Bricks"):FindFirstChild("ShadeResult"):FireServer(u9);
 					end;
 					if u3 == l__LookVector__6 then
 						u4 = tick() + math.random(30, 70) / 10;
