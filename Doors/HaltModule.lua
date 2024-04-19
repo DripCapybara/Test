@@ -1,4 +1,4 @@
-local script = Instance.new("ModuleScript",game.ReplicatedStorage.ClientModules.EntityModules)
+local script = game.ReplicatedStorage.ClientModules.EntityModules.Shade
 local v1 = {};
 local v2 = game:GetService("ReplicatedStorage").Misc.Eyes:GetChildren();
 v1.module_events = require(script.Parent.Parent.Module_Events);
