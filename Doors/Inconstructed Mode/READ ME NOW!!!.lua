@@ -1,0 +1,2 @@
+--// This Folder contains stuff incoming in Inconstructed Mode
+--// Do NOT | Download / Copy / Use | anything from here without my permission.
