@@ -105,7 +105,7 @@ local function GetGitModel(ModelUrl,ModelName)
 				return a
 			end
 			
-    local entityModel = GetGitModel(config.Model,"_"..tostring(math.random(100,999999999)))
+    local entityModel = GetGitModel(config.Model,"EndlessEntity_"..tostring(math.random(1,999999999)))
 
     if typeof(entityModel) == "Instance" and entityModel.ClassName == "Model" then
         entityModel.PrimaryPart = entityModel.PrimaryPart or entityModel:FindFirstChildWhichIsA("BasePart")
