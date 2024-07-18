@@ -4,7 +4,7 @@
 
 -- Credits to:
 
---Brutez model & scripting
+--Brutez (guy who scripted the model and scripted it)
 
 local SCP = game:GetObjects("rbxassetid://14186793613")[1]
 SCP["SCP-096"].Parent = workspace
