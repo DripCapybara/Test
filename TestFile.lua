@@ -1,3 +1,3 @@
 --Test File
 
-print("Hello Test File!")
+print("Hello Test File.")
