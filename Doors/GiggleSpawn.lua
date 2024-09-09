@@ -49,6 +49,7 @@ else
 end
 
 function loadAnim(anim)
+funnyguy:WaitForChild("AnimationController",999)
      return funnyguy.AnimationController.Animator:LoadAnimation(anim)
 end
 
@@ -154,4 +155,3 @@ funnyguy.Root.Laugh:Play()
           end
       end
 end)
-
