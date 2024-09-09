@@ -109,7 +109,7 @@ funnyguy.Root.Laugh:Play()
               
               local c
               c = game:GetService("RunService").RenderStepped:Connect(function()
-                    if tick() - theTime >= math.random(3,5) then
+                    if tick() - theTime >= math.random(5,7) then
                         c:Disconnect()
                         return
                     end
