@@ -48,8 +48,9 @@ else
       return
 end
 
+wait()
 function loadAnim(anim)
-funnyguy:WaitForChild("AnimationController",999)
+repeat wait() until funnyguy:FindFirstChild("AnimationController")
      return funnyguy.AnimationController.Animator:LoadAnimation(anim)
 end
 
