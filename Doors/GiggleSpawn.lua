@@ -1,3 +1,6 @@
+-- Made by Dripcapybara
+-- a client sided remake of "Giggle" from doors.
+
 local funnyguyragdoll = game:GetObjects("rbxassetid://70665402954663")[1]
 local funnyguy = game:GetObjects("rbxassetid://105107170981821")[1]
 local cameraShaker = require(game.ReplicatedStorage.CameraShaker)
@@ -12,8 +15,25 @@ local cameraShaker = require(game.ReplicatedStorage.CameraShaker)
 funnyguy.Parent = workspace
 funnyguy:PivotTo(CFrame.new())
 
+local minRadius = -20
+local maxRadius = 20
+
+local damage = 8
+
+if getgenv().minRadius ~= nil then
+    minRadius = getgenv().minRadius
+end
+
+if getgenv().maxRadius ~= nil then
+    maxRadius = getgenv().maxRadius
+end
+
+if getgenv().damage ~= nil then
+    damage = getgenv().damage
+end
+
 local char = game.Players.LocalPlayer.Character
-local spawnPoint = char:GetPivot()*CFrame.new(math.random(-20,20),5,math.random(-20,20))
+local spawnPoint = char:GetPivot()*CFrame.new(math.random(minRadius,maxRadius),5,math.random(minRadius,maxRadius))
 local ray = Ray.new(spawnPoint.Position, Vector3.new(0,999,0))
 local hit,pos,normal = workspace:FindPartOnRay(ray)
 
@@ -114,7 +134,7 @@ funnyguy.Root.Laugh:Play()
                         return
                     end
                     if tick() - lastDamage >= 0.75 then
-                         char.Humanoid:TakeDamage(4)
+                         char.Humanoid:TakeDamage(damage)
                          lastDamage = tick()
                     end
                     
