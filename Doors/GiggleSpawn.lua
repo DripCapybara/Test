@@ -6,8 +6,9 @@ local funnyguycover = game:GetObjects("rbxassetid://70665402954663")[1]
 local funnyguy = game:GetObjects("rbxassetid://105107170981821")[1]
 local cameraShaker = require(game.ReplicatedStorage.CameraShaker)
 local camera = workspace.CurrentCamera
+
 local camShake = cameraShaker.new(Enum.RenderPriority.Camera.Value, function(cf)
-camera.CFrame = camera.CFrame * cf
+	camera.CFrame = camera.CFrame * cf
 end)
 camShake:Start()
 
@@ -33,7 +34,7 @@ if getgenv().damage ~= nil then
 end
 
 if getgenv().ragdollDissapears ~= nil then
-     ragdollDissapears = getgenv().ragdollDissapears
+    ragdollDissapears = getgenv().ragdollDissapears
 end
 
 local char = game.Players.LocalPlayer.Character
@@ -94,19 +95,24 @@ funnyguy.Root.Touched:Connect(function(b)
          s.Parent = funnyguy.Root
          s:Play()
          
+         local s = funnyguy.Root.Sounds.SmackImpact:GetChildren()
+         s = s[math.random(1,#s)]:Clone()
+         s.Parent = funnyguy.Root
+         s:Play()
+         
          local stunTrack = loadAnim(funnyguy.Animations.stunhit)
          stunTrack.Priority = "Action"
          stunTrack:Play()
          
          local idleStunTrack = loadAnim(funnyguy.Animations.stunidle)
-         delay(1,function()
+         delay(0.5,function()
          
          idleStunTrack.Priority = "Idle"
          idleStunTrack.Looped = true
          idleStunTrack:Play()
          end)
          
-         wait(4)
+         wait(7)
          
          local stunend = loadAnim(funnyguy.Animations.stunexit)
          stunend.Priority = "Action"
@@ -137,12 +143,12 @@ funnyguy.Hitbox.Touched:Connect(function(b)
               detach.Looped = true
               detach:Play()
         
-local isclose = false
-local scare = Instance.new("Sound",workspace)
-scare.SoundId = "rbxassetid://10337055816"
-scare.Volume = 0.55
-scare:Play()
-funnyguy.Root.Laugh:Play()
+              local isclose = false
+              local scare = Instance.new("Sound",workspace)
+              scare.SoundId = "rbxassetid://10337055816"
+              scare.Volume = 0.55
+              scare:Play()
+              funnyguy.Root.Laugh:Play()
               while not isclose do
                   task.wait()
                   local speedy = 3
@@ -207,7 +213,7 @@ funnyguy.Root.Laugh:Play()
               local dir = -(char:GetPivot().Position-funnyguyragdoll:GetPivot(). Position).Unit
               local throw = Instance.new("BodyVelocity",funnyguyragdoll.Root)
               throw.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
-              throw.Velocity = dir * 35
+              throw.Velocity = dir * 50
               game.Debris:AddItem(throw,0.1)
               
               task.delay(5, function()
