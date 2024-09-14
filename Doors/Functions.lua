@@ -19,6 +19,30 @@ function module.Caption(Msg,Dur)
    ModuleScripts.MainGame.caption(Msg,true,Dur)
 end
 
+--// Custom Death Message Function
+function module.DeathHint(Hints, Type)
+    local func, setupval, getinfo, typeof, getgc, next = nil, debug.setupvalue or setupvalue, debug.getinfo or getinfo, typeof, getgc, next
+
+    for i,v in next, getgc(false) do
+        if typeof(v) == "function" then
+            local info = getinfo(v)
+            if info.currentline == 54 and info.nups == 2 and info.is_vararg == 0 then
+                func = v
+                break
+            end
+        end
+    end
+
+    local function DeathHint(hints, type)
+        setupval(func, 1, hints)
+        if type ~= nil then
+            setupval(func, 2, type)
+        end
+    end
+
+    DeathHint(Hints, type)
+end
+
 --// Spawns Glitch
 function module.InitGlitch()
    require(game:GetService("ReplicatedStorage").ClientModules.EntityModules.Glitch).stuff(ModuleScripts.MainGame)
@@ -27,6 +51,11 @@ end
 --// Light Flicker for non-supporting firesignal executors
 function module.flickerLights(room, dur)
    ModuleScripts.Events.flicker(room,dur)
+end
+
+--// Light Shatter / Break function
+function module.breakLights(room)
+   ModuleScripts.Events.shatter(room)
 end
 
 --// Get Git Image
