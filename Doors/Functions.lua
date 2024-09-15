@@ -40,7 +40,7 @@ function module.DeathHint(Hints, Type)
         end
     end
 
-    DeathHint(Hints, type)
+    DeathHint(Hints, Type)
 end
 
 --// Spawns Glitch
