@@ -1,231 +1,420 @@
--- Made by Dripcapybara
+-- Made by Dripcapybara / The S from kardin's server
 -- a client sided remake of "Giggle" from doors.
+-- Version: V2
 
-local funnyguyragdoll = game:GetObjects("rbxassetid://137955003110738")[1]
-local funnyguycover = game:GetObjects("rbxassetid://70665402954663")[1]
-local funnyguy = game:GetObjects("rbxassetid://105107170981821")[1]
-local cameraShaker = require(game.ReplicatedStorage.CameraShaker)
-local camera = workspace.CurrentCamera
+-- written in mobile (my fingers dont hurt luckily)
 
-local camShake = cameraShaker.new(Enum.RenderPriority.Camera.Value, function(cf)
-	camera.CFrame = camera.CFrame * cf
-end)
-camShake:Start()
-
-funnyguy.Parent = workspace
-funnyguy:PivotTo(CFrame.new())
-
-local minRadius = -20
-local maxRadius = 20
-
-local damage = 2
-local ragdollDissapears = true
-
-if getgenv().minRadius ~= nil then
-    minRadius = getgenv().minRadius
+function Load(URL, AssetName)
+    local Asset = game:GetObjects(URL)[1]
+    return (typeof(Asset)=="string" and nil or Asset)
+    -- Checks if the Asset has failed to load
+    -- If GetObjects fails to load a object, it will return a error as a string instead of the object.
 end
 
-if getgenv().maxRadius ~= nil then
-    maxRadius = getgenv().maxRadius
-end
+-- We load the Assets first so they dont return nil or fail to load.
+GiggleCeiling = Load("rbxassetid://105107170981821")
+GiggleCover = Load("rbxassetid://70665402954663")
+GiggleRagdoll = Load("rbxassetid://137955003110738")
 
-if getgenv().damage ~= nil then
-    damage = getgenv().damage
-end
+GiggleRagdoll.Parent = game.ReplicatedStorage
+GiggleCover.Parent = game.ReplicatedStorage
+GiggleCeiling.Parent = game.ReplicatedStorage
 
-if getgenv().ragdollDissapears ~= nil then
-    ragdollDissapears = getgenv().ragdollDissapears
-end
-
-local char = game.Players.LocalPlayer.Character
-
-repeat task.wait() until char ~= nil
-repeat wait() until funnyguy:FindFirstChild("AnimationController")
-local spawnPoint = char:GetPivot()*CFrame.new(math.random(minRadius,maxRadius),5,math.random(minRadius,maxRadius))
-local ray = Ray.new(spawnPoint.Position, Vector3.new(0,999,0))
-local hit,pos,normal = workspace:FindPartOnRay(ray)
-
-if pos and normal then
-     if normal == Vector3.new(0,0,0) then
-        normal = Vector3.new(0,-1,0)
-     end
-     funnyguy:PivotTo(CFrame.new(pos, pos+normal)*CFrame.new(0,0,-1))
+local DefaultConfigs = {
+     Damage = 6,
+     AttackingTime = math.random(7, 10), -- The time giggle will be attacking for.
+     FallSpeed = 3,        -- Speed for when giggle spawns, can be mininum 2 and how high you want
      
-else
-      funnyguy:Destroy()
-      return
+     Stunnable = true,    -- If set to true, Giggle will be stunnable with glowstick
+     StunTime = 5, -- The time giggle will be stun for
+     
+     RagdollThrowForce = 50,    -- The Ragdoll's Force when its thrown
+     RagdollDissapears = true,  -- If set to true the ragdoll will dissapear once giggle finishes attacking.
+  
+     RoomSpawning = {
+          Enabled = true   -- If set to false, giggle will spawn around the player.
+     },
+     
+     PlayerSpawning = { -- This table will be used if Room Spawning is Disabled
+          MinRadius = -20,  -- The minimum distance giggle can spawn from the player.
+          MaxRadius = 20.  --  The maximum distance giggle can spawn from the player.
+     },
+     
+     SpawningKey = { -- Key for Spawning
+          Enabled = false,  -- If enabled once the key is pressed, giggle will spawn.
+          Key = "G"    -- Key that is used for spawning giggle
+     }
+}
+
+-- If a config is not found, it will be replaced with the default version of it
+if getgenv().GIGGLE_SPAWN_CONFIG then
+    local setConfig = GIGGLE_SPAWN_CONFIG
+    
+    for i, v in next, DefaultConfigs do
+        if setConfig[i] == nil then
+            setConfig[i] = v
+        end
+    end
+    
+    DefaultConfigs = setConfig
 end
 
-wait()
-function loadAnim(anim)
-     return funnyguy.AnimationController.Animator:LoadAnimation(anim)
+-- VARIABLES --
+
+local Player = game:GetService("Players").LocalPlayer
+local Character = Player.Character
+
+local Camera = workspace.CurrentCamera
+
+local ModuleScripts = {
+MainGame = require(Player.PlayerGui.MainUI.Initiator.Main_Game),
+Events = require(game:GetService("ReplicatedStorage").ClientModules.Module_Events),
+}
+
+local camShake = ModuleScripts.MainGame.camShaker
+
+repeat task.wait() until Character and Player and Character ~= nil and Player ~= nil
+
+local function SpawnGiggle()
+
+if DefaultConfigs["SpawningKey"]["Enabled"] then
+      if game.ReplicatedStorage:FindFirstChild("GiggleCeiling") then
+         GiggleCeiling = game.ReplicatedStorage:FindFirstChild("GiggleCeiling"):Clone()
+     else
+         GiggleCeiling = Load("rbxassetid://105107170981821")
+         GiggleCeiling:Clone().Parent = game.ReplicatedStorage
+     end
+     if game.ReplicatedStorage:FindFirstChild("GiggleCover") then
+         GiggleCover = game.ReplicatedStorage:FindFirstChild("GiggleCover"):Clone()
+     else
+         GiggleCover = Load("rbxassetid://70665402954663")
+         GiggleCover:Clone().Parent = game.ReplicatedStorage
+     end
+     if game.ReplicatedStorage:FindFirstChild("GiggleRagdoll_") then
+         GiggleRagdoll = game.ReplicatedStorage:FindFirstChild("GiggleRagdoll_"):Clone()
+      else
+         GiggleRagdoll = Load("rbxassetid://137955003110738")
+         GiggleRagdoll:Clone().Parent = game.ReplicatedStorage
+     end
 end
-
-local attacked = false
-local canAttack = true
-local idletrack = loadAnim(funnyguy.Animations.idle)
-idletrack.Priority = "Idle"
-idletrack.Looped = true
-idletrack:Play()
-
-spawn(function()
-     while not attacked do
-         wait(math.random(5,14))
-         if attacked then break end
-         if canAttack then
-         local laughTrack = loadAnim(funnyguy.Animations.laugh)
-         laughTrack.Priority = "Action"
-         laughTrack:Play()
-         local s = funnyguy.Root.Sounds.Laugh:GetChildren()
-         s = s[math.random(1,#s)]:Clone()
-         s.Parent = funnyguy.Root
-         s:Play()
-         game.Debris:AddItem(s, 3)
-         end
-     end
-end)
-
-funnyguy.Root.Touched:Connect(function(b)
-     if b.Name == "GlowstickLive" then
-         if not canAttack then return end
-         canAttack = false
-         idletrack:Stop(0.5)
-         local s = funnyguy.Root.Sounds.Smack:GetChildren()
-         s = s[math.random(1,#s)]:Clone()
-         s.Parent = funnyguy.Root
-         s:Play()
-         
-         local s = funnyguy.Root.Sounds.SmackImpact:GetChildren()
-         s = s[math.random(1,#s)]:Clone()
-         s.Parent = funnyguy.Root
-         s:Play()
-         
-         local stunTrack = loadAnim(funnyguy.Animations.stunhit)
-         stunTrack.Priority = "Action"
-         stunTrack:Play()
-         
-         local idleStunTrack = loadAnim(funnyguy.Animations.stunidle)
-         delay(0.5,function()
-         
-         idleStunTrack.Priority = "Idle"
-         idleStunTrack.Looped = true
-         idleStunTrack:Play()
-         end)
-         
-         wait(7)
-         
-         local stunend = loadAnim(funnyguy.Animations.stunexit)
-         stunend.Priority = "Action"
-         stunend:Play()
-         
-         wait(0.5)
-         
-         canAttack = true
-         idletrack:Play()
-         stunend:Stop()
-         idleStunTrack:Stop(0.5)
-     end
-end)
-
-funnyguy.Hitbox.Touched:Connect(function(b)
-      if b.Parent:FindFirstChildOfClass("Humanoid") then
-          if game.Players:GetPlayerFromCharacter(b.Parent) then
-              if attacked then return end
-              if not canAttack then return end
-              attacked = true
-              local oldfunnyguy = funnyguy
-              funnyguy = funnyguycover:Clone()
-              funnyguy.Parent = workspace
-              funnyguy:PivotTo(oldfunnyguy:GetPivot())
-              oldfunnyguy:Destroy()
-              local detach = loadAnim(funnyguy.Animations.detach)
-              detach.Priority = "Action"
-              detach.Looped = true
-              detach:Play()
+    
+    -- spawning in roof
+    if DefaultConfigs["RoomSpawning"]["Enabled"] == true then
+        local LatestRoom = workspace.CurrentRooms[game.ReplicatedStorage.GameData.LatestRoom.Value]
         
-              local isclose = false
-              local scare = Instance.new("Sound",workspace)
-              scare.SoundId = "rbxassetid://10337055816"
-              scare.Volume = 0.55
-              scare:Play()
-              funnyguy.Root.Laugh:Play()
-              while not isclose do
-                  task.wait()
-                  local speedy = 3
-                  local charPos = char.Head.CFrame
-                  local dir = -(funnyguy.Root.Position-charPos.Position).Unit
-                  local dist = dir * speedy
-                  local newPos = funnyguy:GetPivot().Position + dist
-                  local c = funnyguy:GetPivot():Lerp(CFrame.new(newPos, newPos + dir), 0.3)
-                  
-                  funnyguy:PivotTo(c)
-                  
-                  local dist = (funnyguy.Root.Position-charPos.Position).Magnitude
-                  if dist < 3 then
-                      isclose = true
-                  end
-              end
-              
-              detach:Stop()
-              
-              local attacking = loadAnim(funnyguy.Animations.stuck)
-              attacking.Looped = true
-              attacking:Play()
-              
-              local HELP = Instance.new("Animation")
-              HELP.AnimationId = "rbxassetid://16789462076"
-              HELP = char.Humanoid.Animator:LoadAnimation(HELP)
-              HELP.Priority = "Action"
-              HELP:Play()
-              
-              local theTime = tick()
-              local lastDamage = tick()
-              local lastShake = tick()
-              
-              local c
-              c = game:GetService("RunService").RenderStepped:Connect(function()
-                    if tick() - theTime >= math.random(5,7) then
-                        c:Disconnect()
-                        return
+        if LatestRoom then
+            
+            GiggleCeiling.Parent = LatestRoom
+            local Floors = {}
+            
+            for _,v in pairs(LatestRoom:GetDescendants()) do
+                if v:IsA("Part") or v:IsA("BasePart") or v:IsA("PartOperation") or v:IsA("UnionOperation") or v:IsA("MeshPart") then
+                    if v.Name == "Floor" or string.lower(v.Name)=="floor" then
+                        table.insert(Floors, v)
                     end
-                    if tick() - lastDamage >= 0.75 then
-                         char.Humanoid:TakeDamage(damage)
-                         game:GetService("ReplicatedStorage").GameStats["Player_".. game.Players.LocalPlayer.Name].Total.DeathCause.Value = "Giggle"
-                         lastDamage = tick()
+                end
+            end
+            
+            local center = Floors[math.random(1,#Floors)]
+            
+            if not center or center == nil then return error("Failed to get spawn center.", 0) end
+                
+                local minX = -center.Size.X / 2
+                local maxX = center.Size.X / 2
+                
+                local minZ = -center.Size.Z / 2
+                local maxZ = center.Size.Z / 2
+                
+                --Adjusting so it doesn't spawn out of bounds too much
+                minX += 1
+                maxX -= 1
+                minZ += 1
+                maxZ -= 1
+                
+                local x = math.random(minX,maxX)
+                local z = math.random(minZ,maxZ)
+                -- and we dont talk about Y coordinate.
+                
+                local origin = center.Position + Vector3.new(x, center.Position.Y + 8, z)
+                local direction =  Vector3.new(0,999,0)
+                
+                -- we use raycast to get the normal and position of the supposed "roof"
+                local ray = Ray.new(origin, direction)
+                local hit, pos, normal = workspace:FindPartOnRay(ray)
+                
+                if pos and normal then
+                    if normal == Vector3.new(0,0,0) then
+                        normal = Vector3.new(0,-1,0) -- small fix cuz the position will get fucked up if the normal is 0.
                     end
                     
-                    if tick() - lastShake >= 0.3 then
-                         camShake:ShakeOnce(6,25,0,5,3,16)
-                         lastShake = tick()
-                    end
+                    -- positioning with random rotation (FINALLY)
+                    GiggleCeiling:PivotTo(CFrame.new(pos, pos + normal) * CFrame.new(0,0,-1))
+                    GiggleCeiling:PivotTo(GiggleCeiling:GetPivot()*CFrame.Angles(0,0,math.rad(math.random(-180,180)))) -- Random Rotation!!!
+                    GiggleCeiling.Hitbox.CFrame = CFrame.new(origin, pos)
                     
-                    funnyguy:PivotTo(char.Head.CFrame*CFrame.new(0,0.45,-1.5)*CFrame.Angles(0,math.rad(180),0))
-              end)
-              
-              repeat task.wait() until not c.Connected
-              
-              HELP:Stop()
-              funnyguyragdoll.Parent = workspace
-              funnyguyragdoll:PivotTo(funnyguy:GetPivot())
-              funnyguyragdoll.Root.Sound_Laugh:Play()
-              funnyguy:Destroy()
-              
-              local dir = -(char:GetPivot().Position-funnyguyragdoll:GetPivot(). Position).Unit
-              local throw = Instance.new("BodyVelocity",funnyguyragdoll.Root)
-              throw.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
-              throw.Velocity = dir * 50
-              game.Debris:AddItem(throw,0.1)
-              
-              task.delay(5, function()
-                   if ragdollDissapears then
-                         for _,v in pairs(funnyguyragdoll:GetDescendants())do
-                              if v:IsA("MeshPart") then
-                                  game.TweenService:Create(v,TweenInfo.new(3),{Transparency = 1}):Play()
-                              end
-                         end
-                         game.Debris:AddItem(funnyguyragdoll,3)
-                   end
-              end)
-          end
-      end
-end)
+                    if (GiggleCeiling.Root.Position - origin).Magnitude > 100 or (GiggleCeiling.Root.Position - origin).Magnitude < 10 then
+                        -- If giggle is too close or far from the ray's origin
+                        GiggleCeiling:Destroy()
+                        return error("Failed to spawn in correct positions",0)
+                    end
+                else 
+                    return error("Failed to get spawn position.",0)
+                end
+            end
+        else
+        -- spawning around player
+            local minX = DefaultConfigs["PlayerSpawning"]["MinRadius"]
+            local minZ = DefaultConfigs["PlayerSpawning"]["MinRadius"]
+            local maxX = DefaultConfigs["PlayerSpawning"]["MaxRadius"]
+            local maxZ = DefaultConfigs["PlayerSpawning"]["MaxRadius"]
+            local center = Character:GetPivot().Position
+            local x = math.random(minX,maxX)
+            local z = math.random(minZ,maxZ)
+            -- and we dont talk about Y coordinate.
+            
+            local origin = center.Position + Vector3.new(x, center.Position.Y, z)
+            local direction =  Vector3.new(0,999,0)
+            
+            -- we use raycast to get the normal and position of the supposed "roof"
+            local ray = Ray.new(origin, direction)
+            local hit, pos, normal = workspace:FindPartOnRay(ray)
+            
+            if pos and normal then
+                if normal == Vector3.new(0,0,0) then
+                    normal = Vector3.new(0,-1,0) -- small fix cuz the position will get fucked up if the normal is 0.
+                end
+                
+                -- positioning with random rotation (FINALLY)
+                GiggleCeiling:PivotTo(CFrame.new(pos, pos + normal) * CFrame.new(0,0,-1))
+                GiggleCeiling:PivotTo(GiggleCeiling:GetPivot()*CFrame.Angles(0,0,math.rad(math.random(-180,180)))) -- Random Rotation!!!
+                
+                if (GiggleCeiling.Root.Position - origin).Magnitude > 100 or (GiggleCeiling.Root.Position - origin).Magnitude < 10 then
+                    -- If giggle is too close or far from the ray's origin
+                    GiggleCeiling:Destroy()
+                    return error("Failed to spawn in correct positions",5)
+                end
+            else 
+                return error("Failed to get spawn position.",5)
+            end
+        end
+        
+        -- Function to load anims faster
+        local function LoadAnimation(GiggleModel, Animation)
+            if GiggleModel:FindFirstChild("Animations") then
+                return GiggleModel:FindFirstChildOfClass("AnimationController"):FindFirstChildOfClass("Animator"):LoadAnimation(GiggleModel:FindFirstChild("Animations"):FindFirstChild(Animation)) -- LONG AHH ANIMATION LOADER
+            end
+        end
+        
+        -- Setup
+        local Attacked = false
+        local canAttack = true
+        
+        local MainGiggle = GiggleCeiling
+        
+        local Sounds = MainGiggle.Root.Sounds
+        local Laughs = Sounds.Laugh:GetChildren()
+        local Smacks = Sounds.Smack:GetChildren()
+        local SmackImpacts = Sounds.SmackImpact:GetChildren()
+        
+        local Idle = LoadAnimation(MainGiggle, "idle")
+        Idle.Priority = "Idle"
+        Idle.Looped = true
+        Idle:Play()
+        
+        task.spawn(function() -- Thread to make giggle laugh every once in a while
+            while not Attacked do
+                task.wait(math.random(5, 9))
+                if Attacked then break end   -- Once the time ends, if giggle has attacked we return.
+                    if canAttack then
+                        
+                        local laugh = LoadAnimation(MainGiggle, "laugh")
+                        laugh.Priority = "Action"
+                        laugh:Play()
+                        
+                        local laughSound = Laughs[math.random(1,#Laughs)]:Clone()
+                        laughSound.Parent = MainGiggle.Root
+                        laughSound:Play()
+                        laughSound.Ended:Wait()
+                        
+                        laughSound:Destroy()
+                    end
+                end
+            end)
+            
+            -- stun being hit by a glowstick
+           MainGiggle.Root.Touched:Connect(function(basepart)
+                 if basepart.Name == "GlowstickLive" then
+                      if not canAttack then return end
+                      if not DefaultConfigs["Stunnable"] then return end
+                      canAttack = false
+                      Idle:Stop(0.65)
+                      
+                      task.spawn(function()
+                      local smackSound = Smacks[math.random(1,#Smacks)]:Clone()
+                      smackSound.Parent = MainGiggle.Root
+                      smackSound:Play()
+                      smackSound.Ended:Wait()
+                      smackSound:Destroy()
+                      end)
+                      
+                      task.spawn(function()
+                      local impactSound = SmackImpacts[math.random(1,#SmackImpacts)]:Clone()
+                      impactSound.Parent = MainGiggle.Root
+                      impactSound:Play()
+                      impactSound.Ended:Wait()
+                      impactSound:Destroy()
+                      end)
+                      
+                     local stun = LoadAnimation(MainGiggle, "stunhit")
+                     stun.Priority = "Action"
+                     stun:Play()
+                     
+                     local stunidle = LoadAnimation(MainGiggle, "stunidle")
+                     stunidle.Priority = "Idle"
+                     stunidle.Looped = true
+                     
+                     task.delay(0.375, function()
+                        stunidle:Play()
+                    end)
+                    
+                    task.wait(DefaultConfigs["StunTime"])
+                    
+                    local stunend = LoadAnimation(MainGiggle, "stunexit")
+                    stunend.Priority = "Action"
+                    stunend:Play()
+                    
+                    task.wait(0.5)
+                    
+                    canAttack = true
+                    Idle:Play()
+                    stunend:Stop()
+                    stunidle:Stop(0.5)
+                 end
+           end)
+           
+           MainGiggle.Hitbox.Touched:Connect(function(basepart)
+                if basepart.Parent:FindFirstChildOfClass("Humanoid") then
+                    local player = game:GetService("Players"):GetPlayerFromCharacter(basepart.Parent) 
+                    if player and player == Player then
+                         if Attacked or not canAttack then return end
+                         Attacked = true
+                         
+                         local OldGiggle = MainGiggle
+                         MainGiggle = GiggleCover:Clone()
+                         MainGiggle.Parent = workspace
+                         MainGiggle:PivotTo(OldGiggle:GetPivot())
+                         OldGiggle:Destroy()
+                         
+                        local Detach = LoadAnimation(MainGiggle, "detach")
+                        Detach.Priority = "Action"
+                        Detach.Looped = true
+                        Detach:Play()
+                        
+                        local IsClose = false
+                        local Scare = Instance.new("Sound", Player)
+                        Scare.SoundId = "rbxassetid://10337055816"
+                        Scare.Volume = 0.55
+                        Scare:Play()
+                        
+                        MainGiggle.Root.Laugh:Play()
+                        
+                        while not IsClose do
+                             task.wait()
+                             
+                             local Goal = Character.Head.CFrame * CFrame.new(0, 0, -0.5)
+                             local Direction = -(MainGiggle.Root.Position - Goal.Position).Unit
+                             local TravelDistance = Direction * DefaultConfigs["FallSpeed"]
+                             local NewPosition = MainGiggle:GetPivot().Position + TravelDistance
+                             local NewCFrame = MainGiggle:GetPivot():Lerp(CFrame.new(NewPosition, NewPosition + Direction), 0.3)
+                             
+                             MainGiggle:PivotTo(NewCFrame)
+                             
+                             if (NewCFrame.Position - Goal.Position).Magnitude < 3 then
+                                  IsClose = true
+                             end
+                        end
+                        
+                        Detach:Stop()
+                        
+                        -- NOT FUNNY
+                        local Attacking = LoadAnimation(MainGiggle, "stuck")
+                        Attacking.Looped = true
+                        Attacking:Play()
+                        
+                        local HELP = Instance.new("Animation")
+                        HELP.AnimationId = "rbxassetid://16789462076"
+                        local WHATISTHISLSPLASH = Character: FindFirstChildOfClass("Humanoid"): FindFirstChildOfClass("Animator"):LoadAnimation(HELP)
+                        WHATISTHISLSPLASH.Priority = "Action"
+                        WHATISTHISLSPLASH.Looped = true
+                        WHATISTHISLSPLASH:Play()
+                        
+                        local theTime = tick()
+                        local lastDamage = tick()
+                        local lastShake = tick()
+                                
+                                local Connection
+                                Connection = game:GetService("RunService").RenderStepped:Connect(function()
+                                    if tick() - theTime >= math.random(4, 7) then
+                                        Connection:Disconnect()
+                                        return
+                                    end
+                                    
+                                    if tick() - lastDamage >= 1.35 then
+                                    lastDamage = tick()
+                                        Character:FindFirstChildOfClass("Humanoid"):TakeDamage(DefaultConfigs["Damage"])   -- IT HURTS
+                                        game:GetService("ReplicatedStorage").GameStats["Player_".. game.Players.LocalPlayer.Name].Total.DeathCause.Value = "Giggle"
+                                        
+                                    end
+                                    
+                                    if tick() - lastShake >= 0.3 then
+                                        camShake:ShakeOnce(6,25,0,5,3,16)
+                                        lastShake = tick()
+                                    end
+                                    
+                                    MainGiggle:PivotTo(Camera.CFrame * CFrame.new(0, 0, -1) * CFrame.Angles(0, math.rad(180), 0))
+                                end)
+                                
+                                repeat task.wait() until not Connection.Connected
+                                
+                                WHATISTHISLSPLASH:Stop()
+                                local OldGiggle = MainGiggle
+                                MainGiggle = GiggleRagdoll
+                                MainGiggle.Parent = workspace
+                                MainGiggle:PivotTo(OldGiggle:GetPivot())
+                                MainGiggle.Root.Sound_Laugh:Play()
+                                OldGiggle:Destroy()
+                                
+                                local Direction = -(Character:GetPivot().Position - MainGiggle:GetPivot().Position).Unit
+                                local ThrowForce = Instance.new("BodyVelocity", MainGiggle.Root)
+                                ThrowForce.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
+                                ThrowForce.Velocity = Direction * DefaultConfigs["RagdollThrowForce"]
+                                game:GetService("Debris"):AddItem(ThrowForce, 0.1)
+                                
+                                task.delay(5, function()
+                                      if DefaultConfigs["RagdollDissapears"] then
+                                          for _,v in pairs(MainGiggle:GetDescendants()) do
+                                               if v:IsA("MeshPart") or v:IsA("Part") then
+                                                    game:GetService("TweenService"):Create(v, TweenInfo.new(3), {Transparency = 1}):Play()
+                                               end
+                                          end
+                                          
+                                          game:GetService("Debris"):AddItem(MainGiggle, 3)
+                                      end
+                                end)
+                            end
+                    end
+           end)
+           
+        end
+        
+        
+        if DefaultConfigs["SpawningKey"]["Enabled"]==true then
+        local KeyCode = DefaultConfigs["SpawningKey"]["Key"]
+             local CAS = game:GetService("ContextActionService")
+             CAS:BindAction("SPAWNGIGGLE", function()
+                    SpawnGiggle()
+             end, true, Enum.KeyCode[KeyCode])
+            else
+            task.spawn(SpawnGiggle) -- Spawning giggle 🔥🔥🔥
+        end
+        
