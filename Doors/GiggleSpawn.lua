@@ -2,7 +2,7 @@
 -- a client sided remake of "Giggle" from doors.
 -- Version: V2
 
--- written in mobile (my fingers dont hurt luckily)
+-- written in mobile (my fingers dont hurt luckily
 
 function Load(URL, AssetName)
     local Asset = game:GetObjects(URL)[1]
@@ -150,7 +150,6 @@ end
                     -- positioning with random rotation (FINALLY)
                     GiggleCeiling:PivotTo(CFrame.new(pos, pos + normal) * CFrame.new(0,0,-1))
                     GiggleCeiling:PivotTo(GiggleCeiling:GetPivot()*CFrame.Angles(0,0,math.rad(math.random(-180,180)))) -- Random Rotation!!!
-                    GiggleCeiling.Hitbox.CFrame = CFrame.new(origin, pos)
                     
                     if (GiggleCeiling.Root.Position - origin).Magnitude > 100 or (GiggleCeiling.Root.Position - origin).Magnitude < 10 then
                         -- If giggle is too close or far from the ray's origin
