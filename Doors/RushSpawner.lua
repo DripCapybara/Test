@@ -55,7 +55,7 @@ local entity = spawner.Create({
 })
 entity:SetCallback("OnDamagePlayer", function(newHealth)
 	if newHealth == 0 then
-		firesignal(game.ReplicatedStorage.RemotesFolder.Jumpscare.OnClientEvent, "Rush")
+		require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Jumpscares.Rush)(require(game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game))
 	end
 end)
 entity:Run()
