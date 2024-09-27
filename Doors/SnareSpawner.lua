@@ -1,57 +1,33 @@
 local LatestRoom = workspace.CurrentRooms[game.ReplicatedStorage.GameData.LatestRoom.Value]
 local Player = game.Players.LocalPlayer
 local maingame = require(Player.PlayerGui.MainUI.Initiator.Main_Game)
+
 if LatestRoom:FindFirstChild("Assets") then
 
 local Damage = 30
 
-if getgenv().Damage then
-  Damage = getgenv().Damage
-end
+  if getgenv().Damage then
+Damage = getgenv().Damage
+  end
+  
 local Stunned = false
 local Snare = game:GetObjects("rbxassetid://119802177430542")[1]
 
-local getsBiggestFloor = false
-local function getLargestPart(model)
-    local largestPart = nil
-    local largestSize = 0
-    for _, des in pairs(model:GetDescendants()) do
-        if des:IsA("BasePart") or des:IsA("MeshPart") or des:IsA("UnionOperation") then
-          if des.Name == "Floor" then
-            local partSize = des:GetMass()
-
-            if partSize > largestSize then
-                largestPart = des
-                largestSize = partSize
-            end
-           end
+local floors = {}
+    
+for _,v in pairs(LatestRoom:GetDescendants()) do
+    if v.Name == "Floor" then
+        if v:IsA("BasePart") or v:IsA("MeshPart") or v:IsA("UnionOperation") then
+             table.insert(floors, v)
         end
     end
-    return largestPart
 end
-
-local function LoadAnim(Anim)
-     return Snare:WaitForChild("AnimationController"):WaitForChild("Animator"):LoadAnimation(Anim)
-end
-
-local floor = nil
-
-if getsBiggestFloor == true then
-    floor = getLargestPart(LatestRoom)
-else
-    local floors = {}
-    
-    for _,v in pairs(LatestRoom:GetDescendants()) do
-         if v:IsA("BasePart") or v:IsA("MeshPart") or v:IsA("UnionOperation") then
-             if v.Name == "Floor" then
-                  table.insert(floors, v)
-             end
-         end
     end
     if #floors > 0 then
-        floor = floors[math.random(1,#floors])
+        floor = floors[math.random(1,#floors)]
     end
 end
+
 if not floor or floor == nil then return end
 Snare.Parent = LatestRoom:FindFirstChild("Assets") 
 
@@ -72,17 +48,17 @@ Snare.Hitbox.Touched:Connect(function(BasePart)
          if Stunned then return end
          
          Stunned = true
-         maingame.stopcam = true
          local bruv = true
          local c
+         local pos = Vector3.new(Player.Character:GetPivot().Position.X, Snare.Hitbox.Position.Y, Player.Character:GetPivot().Position.Z)
+         Snare.Hitbox.CFrame = CFrame.new(Snare.Hitbox.Position, Snare.Hitbox.Position + (Snare.Hitbox.Position - pos).Unit)
          c = game:GetService("RunService").RenderStepped:Connect(function()
                if not bruv then c:Disconnect() end
                
-               game:GetService("TweenService"):Create(workspace.CurrentCamera, TweenInfo.new(0.1), {CFrame = Player.Character.Head.CFrame}):Play()
-               game:GetService("TweenService"):Create(Player.Character.Collision, TweenInfo.new(0.4), {CFrame = Snare.Hitbox.CFrame*CFrame.new(0,0.5,0)*CFrame.Angles(0,0,math.rad(90))}):Play()
+               Player.Character:PivotTo(Snare.Hitbox.CFrame * CFrame.new(0, 1, 0))
          end)
          Player.Character:SetAttribute("Stunned",true)
-         Player.Character:FindFirstChildOfClass("Humanoid"):TakeDamage(Damage)
+         Player.Character:FindFirstChildOfClass("Humanoid"):TakeDamage(30)
          Snare.Hitbox.Sound:Play()
          Player.Character.Collision.Anchored = true
          local Model = LoadAnim(Snare.Animations.Model)
@@ -108,10 +84,14 @@ Snare.Hitbox.Touched:Connect(function(BasePart)
                 Exit:Play()
                 
                 task.delay(1, function()
-                bruv = false
-                 maingame.stopcam = false
+                      bruv = false
+                      maingame.stopcam = false
                       Player.Character.Collision.Anchored = false
                       Player.Character:SetAttribute("Stunned",false)
+                end)
+                
+                task.delay(2, function()
+                    Stunned = false
                 end)
                 
                 end)
