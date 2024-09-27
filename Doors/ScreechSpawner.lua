@@ -77,9 +77,9 @@ a.Init = function(DefaultConfig)
 	
 		else
 	v7.Attack:Play();
-	
-	if DefaultConfig.Hurts == true then
 	game.Players.LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game.RemoteListener.Modules.Screech.Attack:Play()
+	if DefaultConfig.Hurts == true then
+	
 	game.Players.LocalPlayer.Character.Humanoid.Health = game.Players.LocalPlayer.Character.Humanoid.Health - 30
 	end
 	p1.camShaker:ShakeOnce(6, 42, 0, 1);
