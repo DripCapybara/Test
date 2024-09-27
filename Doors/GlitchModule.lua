@@ -90,7 +90,7 @@ function v1.stuff(p1, p2, p3)
 		script.Sound:Play();
 		wait(glitchSpeed-0.05);
 		v7.AnimationController:LoadAnimation(v7.Animations.Attack):Play(0);
-		game.Lighting.Ambience_Glitch.Enabled = true;
+		--game.Lighting.Ambience_Glitch.Enabled = true;
 		task.wait(0.05);
 		l__LocalPlayer__3.PlayerGui.MainUI.MainFrame.GlitchScreen.Visible = true;
 		task.wait(0.1);
