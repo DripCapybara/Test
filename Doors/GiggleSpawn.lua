@@ -171,7 +171,7 @@ end
             local z = math.random(minZ,maxZ)
             -- and we dont talk about Y coordinate.
             
-            local origin = center.Position + Vector3.new(x, center.Position.Y, z)
+            local origin = center + Vector3.new(x, center.Y, z)
             local direction =  Vector3.new(0,999,0)
             
             -- we use raycast to get the normal and position of the supposed "roof"
