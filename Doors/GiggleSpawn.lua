@@ -68,7 +68,6 @@ local Camera = workspace.CurrentCamera
 
 local ModuleScripts = {
 MainGame = require(Player.PlayerGui.MainUI.Initiator.Main_Game),
-Events = require(game:GetService("ReplicatedStorage").ClientModules.Module_Events),
 }
 
 local camShake = ModuleScripts.MainGame.camShaker
