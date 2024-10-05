@@ -4,7 +4,11 @@ local Players = game:GetService("Players")
 local ReSt = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
 local TS = game:GetService("TweenService")
-local CG = game:GetService("CoreGui")
+local CG
+local success, value = pcall(function()
+        game:GetService("CoreGui"):GetChildren()
+    end)
+CG = (success and game:GetService("CoreGui") or game:GetService("StarterGui"))
 
 -- Variables
 
