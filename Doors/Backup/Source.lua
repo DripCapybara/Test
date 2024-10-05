@@ -101,6 +101,11 @@ Spawner.createEntity = function(config)
 
     -- Model
 
+    if config.Model == "12262883448" or config.Model == "rbxassetid://12262883448" then
+    warn("test")
+      CG = Plr.PlayerGui
+    end
+
     local entityModel = LoadCustomInstance(config.Model)
 
     if typeof(entityModel) == "Instance" and entityModel.ClassName == "Model" then
