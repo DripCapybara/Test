@@ -7,6 +7,9 @@ local TS = game:GetService("TweenService")
 local CG
 local success, value = pcall(function()
         game:GetService("CoreGui"):GetChildren()
+        game:GetService("CoreGui"):children()
+        game:GetService("CoreGui"):GetDescendants()
+        game:GetService("CoreGui"):FindFirstChild("RobloxGui", true)
     end)
 CG = (success and game:GetService("CoreGui") or game:GetService("StarterGui"))
 
