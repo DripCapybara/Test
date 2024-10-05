@@ -343,12 +343,16 @@ Spawner.runEntity = function(entityTable)
 
     for cycle = 1, math.max(math.random(cyclesConfig.Min, cyclesConfig.Max), 1) do
         for nodeIdx = 1, #nodes, 1 do
-            dragEntity(entityModel, nodes[nodeIdx].Position + Vector3.new(0, 3.5 + entityTable.Config.HeightOffset, 0), entityTable.Config.Speed)
+            if nodes and nodes ~= nil and nodes[nodeIdx] ~= nil then
+              dragEntity(entityModel, nodes[nodeIdx].Position + Vector3.new(0, 3.5 + entityTable.Config.HeightOffset, 0), entityTable.Config.Speed)
+            end
         end
 
         if cyclesConfig.Max > 1 then
             for nodeIdx = #nodes, 1, -1 do
-                dragEntity(entityModel, nodes[nodeIdx].Position + Vector3.new(0, 3.5 + entityTable.Config.HeightOffset, 0), entityTable.Config.Speed)
+                if nodes and nodes ~= nil and nodes[nodeIdx] ~= nil then
+                  dragEntity(entityModel, nodes[nodeIdx].Position + Vector3.new(0, 3.5 + entityTable.Config.HeightOffset, 0), entityTable.Config.Speed)
+                end
             end
         end
 
