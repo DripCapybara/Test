@@ -4,14 +4,7 @@ local Players = game:GetService("Players")
 local ReSt = game:GetService("ReplicatedStorage")
 local RS = game:GetService("RunService")
 local TS = game:GetService("TweenService")
-local CG
-local success, value = pcall(function()
-        game:GetService("CoreGui"):GetChildren()
-        game:GetService("CoreGui"):children()
-        game:GetService("CoreGui"):GetDescendants()
-        game:GetService("CoreGui"):FindFirstChild("RobloxGui", true)
-    end)
-CG = (success and game:GetService("CoreGui") or game:GetService("StarterGui"))
+local CG = game:GetService("CoreGui")
 
 -- Variables
 
@@ -33,6 +26,7 @@ local ModuleScripts = {
     ModuleEvents = require(ReSt.ClientModules.Module_Events),
     MainGame = require(Plr.PlayerGui.MainUI.Initiator.Main_Game),
 }
+
 local EntityConnections = {}
 
 local Spawner = {}
