@@ -102,8 +102,8 @@ Spawner.createEntity = function(config)
     -- Model
 
     if config.Model == "12262883448" or config.Model == "rbxassetid://12262883448" then
-    warn("test")
       CG = Plr.PlayerGui
+      config.RUNFORYOURDARNLIFE = true
     end
 
     local entityModel = LoadCustomInstance(config.Model)
@@ -144,7 +144,7 @@ end
 
 Spawner.runEntity = function(entityTable)
     -- Nodes
-
+   local function fetchNodes()
     local nodes = {}
 
     for _, room in next, workspace.CurrentRooms:GetChildren() do
@@ -167,6 +167,17 @@ Spawner.runEntity = function(entityTable)
         for _, node in next, pathfindNodes do
             nodes[#nodes + 1] = node
         end
+    end
+
+        return nodes
+    end
+
+    local nodes = fetchNodes()
+    local thing
+    if entityTable.Config.RUNFORYOURDARNLIFE == true then
+       thing = workspace.CurrentRooms.ChildAdded:Connect(function(c)
+          nodes = fetchNodes()
+       end)
     end
 
     -- Spawn
@@ -355,6 +366,10 @@ Spawner.runEntity = function(entityTable)
     if not entityModel:GetAttribute("NoAI") then
         for _, v in next, entityConnections do
             v:Disconnect()
+        end
+
+        if thing then
+            thing:Disconnect()
         end
         
         entityModel:Destroy()
