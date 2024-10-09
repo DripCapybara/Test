@@ -276,7 +276,6 @@ Spawner.runEntity = function(entityTable)
                     task.spawn(function()
                         if Char:GetAttribute("Hiding") and not entityTable.Config.RUNFORYOURDARNLIFE then
                            return
-                        elseif Char:GetAttribute("Hiding") and entityTable.Config.RUNFORYOURDARNLIFE then
                         end
                         Char:SetAttribute("IsDead", true)
 
