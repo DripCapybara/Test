@@ -27,8 +27,6 @@ local ModuleScripts = {
     MainGame = require(Plr.PlayerGui.MainUI.Initiator.Main_Game),
 }
 
-local EntityConnections = {}
-
 local Spawner = {}
 
 -- Misc Functions
@@ -41,14 +39,12 @@ function getPlayerRoot()
     return Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChild("Head")
 end
 
-function dragEntity(entityModel, pos, speed)
-    local entityConnections = EntityConnections[entityModel]
+function dragEntity(entityTable, entityModel, pos, speed)
+     if entityTable.Connections.movementNode then
+         entityTable.Connections.movementNode:Disconnect()
+     end
 
-    if entityConnections.movementNode then
-        entityConnections.movementNode:Disconnect()
-    end
-
-    entityConnections.movementNode = RS.Stepped:Connect(function(_, step)
+    entityTable.Connections.movementNode = RS.Stepped:Connect(function(_, step)
         if entityModel.Parent and not entityModel:GetAttribute("NoAI") then
             local rootPos = entityModel.PrimaryPart.Position
             local diff = Vector3.new(pos.X, pos.Y, pos.Z) - rootPos
@@ -56,12 +52,12 @@ function dragEntity(entityModel, pos, speed)
             if diff.Magnitude > 0.1 then
                 entityModel:PivotTo(CFrame.new(rootPos + diff.Unit * math.min(step * speed, diff.Magnitude)))
             else
-                entityConnections.movementNode:Disconnect()
+                entityTable.Connections.movementNode:Disconnect()
             end
         end
     end)
 
-    repeat task.wait() until not entityConnections.movementNode.Connected
+    repeat task.wait() until not entityTable.Connections.movementNode.Connected
 end
 
 function loadSound(soundData)
@@ -134,7 +130,8 @@ Spawner.createEntity = function(config)
                     OnEntityEnteredRoom = function() end,
                     OnLookAtEntity = function() end,
                     OnDeath = function() end
-                }
+                },
+                Connections = {}
             }
 
             return entityTable
@@ -186,8 +183,8 @@ Spawner.runEntity = function(entityTable)
     local startNodeIndex = entityTable.Config.BackwardsMovement and #nodes or 1
     local startNodeOffset = entityTable.Config.BackwardsMovement and -50 or 50
 
-    EntityConnections[entityModel] = {}
-    local entityConnections = EntityConnections[entityModel]
+    --EntityConnections[entityModel] = {}
+    --local entityConnections = EntityConnections[entityModel]
     
     entityModel:PivotTo(nodes[startNodeIndex].CFrame * CFrame.new(0, 0, startNodeOffset) + Vector3.new(0, 3.5 + entityTable.Config.HeightOffset, 0))
     entityModel.Parent = workspace
@@ -217,7 +214,7 @@ Spawner.runEntity = function(entityTable)
 
     local enteredRooms = {}
 
-    entityConnections.movementTick = RS.Stepped:Connect(function()
+    entityTable.Connections.movementTick = RS.Stepped:Connect(function()
         if entityModel.Parent and not entityModel:GetAttribute("NoAI") then
             local entityPos = entityModel.PrimaryPart.Position
             local rootPos = getPlayerRoot().Position
@@ -347,14 +344,14 @@ Spawner.runEntity = function(entityTable)
     for cycle = 1, math.max(math.random(cyclesConfig.Min, cyclesConfig.Max), 1) do
         for nodeIdx = 1, #nodes, 1 do
             if nodes and nodes ~= nil and nodes[nodeIdx] ~= nil then
-              dragEntity(entityModel, nodes[nodeIdx].Position + Vector3.new(0, 3.5 + entityTable.Config.HeightOffset, 0), entityTable.Config.Speed)
+              dragEntity(entityTable, entityModel, nodes[nodeIdx].Position + Vector3.new(0, 3.5 + entityTable.Config.HeightOffset, 0), entityTable.Config.Speed)
             end
         end
 
         if cyclesConfig.Max > 1 then
             for nodeIdx = #nodes, 1, -1 do
                 if nodes and nodes ~= nil and nodes[nodeIdx] ~= nil then
-                  dragEntity(entityModel, nodes[nodeIdx].Position + Vector3.new(0, 3.5 + entityTable.Config.HeightOffset, 0), entityTable.Config.Speed)
+                  dragEntity(entityTable, entityModel, nodes[nodeIdx].Position + Vector3.new(0, 3.5 + entityTable.Config.HeightOffset, 0), entityTable.Config.Speed)
                 end
             end
         end
@@ -371,7 +368,8 @@ Spawner.runEntity = function(entityTable)
     -- Destroy
 
     if not entityModel:GetAttribute("NoAI") then
-        for _, v in next, entityConnections do
+       warn("despawned")
+        for _, v in next, entityTable.Connections do
             v:Disconnect()
         end
 
