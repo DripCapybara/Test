@@ -2,7 +2,7 @@
 -- Not FE
 -- Made By DripCapybara
 
-local CanCrash = false
+-- This is a old script of mine, it may be broken and it may or not be badly coded.
 
 local player = game.Players.LocalPlayer
 local humanoid = player.Character.Humanoid
