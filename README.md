@@ -1,1 +1,1 @@
-This repository is for roblox stuff
+This Repository is made for my Roblox LUA Scripts, DOORS Mods and Etc.
