@@ -2,6 +2,8 @@
 -- FE
 -- Made By DripCapybara
 
+-- This is a old script of mine, it may be broken and it may or not be badly coded.
+
 function yum()
 
 local function waitForChild(parent, childName)
