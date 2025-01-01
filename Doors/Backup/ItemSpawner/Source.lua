@@ -159,7 +159,13 @@ spawner.createItem = function(config)
     end
     config.Spawning.Chance = math.clamp(config.Spawning.Chance, 1, 100);
 
-    local tool = LoadCustomInstance(config.Url);
+    local tool
+    if typeof(config.Url) == "Instance" then
+      tool = config.Url
+    else
+      tool = LoadCustomInstance(config.Url);
+    end
+  
     if tool then
         local model = convertToModel(tool);
         local prompt = Instance.new("ProximityPrompt");
