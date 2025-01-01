@@ -1,3 +1,8 @@
+--[[
+  Note: The backup of the entity spawner & this are both from Vynixu.
+  Im not the owner of these scripts, this is just a backup of the old versions of these scripts.
+--]]
+
 --[[ Services ]]--
 
 local players = game:GetService("Players");
