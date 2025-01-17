@@ -145,6 +145,13 @@ Spawner.runEntity = function(entityTable)
     local nodes = {}
 
     for _, room in next, workspace.CurrentRooms:GetChildren() do
+        local figureNodes = room:FindFirstChild("FigureNodes", true)
+            if figureNodes then
+                for _, node in next, figureNodes:GetChildren() do
+                  nodes[#nodes + 1] = node
+                end
+                continue
+            end
         local pathfindNodes = room:FindFirstChild("PathfindNodes")
         
         if pathfindNodes then
