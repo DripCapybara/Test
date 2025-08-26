@@ -2,9 +2,6 @@ local Players = game:GetService("Players")
 local TS = game:GetService("TweenService")
 
 local Plr = Players.LocalPlayer
-local SelfModules = {
-    Functions = loadstring(game:HttpGet("https://raw.githubusercontent.com/DripCapybara/Test/refs/heads/main/Doors/Functions.lua"))(),
-}
 return function(data)
     task.spawn(function()
         local frame = Plr.PlayerGui.MainUI.AchievementsHolder.Achievement:Clone()
@@ -13,14 +10,7 @@ return function(data)
         frame.Frame.Details.Title.Text = data.Title
         frame.Frame.Details.Desc.Text = data.Desc
         frame.Frame.Details.Reason.Text = data.Reason
-        local image
-        if string.match(data.Image, "rbxassetid://") then
-            image = data.Image
-        else
-           image = GetGitImage(data.Image)
-        end
-        
-        frame.Frame.ImageLabel.Image = image
+        frame.Frame.ImageLabel.Image = data.Image
         frame.Size = UDim2.new(0, 0, 0, 0)
         frame.Frame.Position = UDim2.new(1.1, 0, 0, 0)
         frame.Visible = true
