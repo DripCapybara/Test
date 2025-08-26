@@ -6,7 +6,7 @@ local Plr = game.Players.LocalPlayer
 
 local ModuleScripts = {
    MainGame = require(Plr.PlayerGui.MainUI.Initiator.Main_Game),
-   Events = require(game:GetService("ReplicatedStorage").ClientModules.Module_Events),
+   Events = require(game:GetService("ReplicatedStorage").ModulesClient.Module_Events),
 }
 
 --// Area function
@@ -45,7 +45,7 @@ end
 
 --// Spawns Glitch
 function module.InitGlitch()
-   require(game:GetService("ReplicatedStorage").ClientModules.EntityModules.Glitch).stuff(ModuleScripts.MainGame)
+   require(game:GetService("ReplicatedStorage").ModulesClient.EntityModules.Glitch).stuff(ModuleScripts.MainGame)
 end
 
 --// Light Flicker for non-supporting firesignal executors
