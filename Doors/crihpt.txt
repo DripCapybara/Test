@@ -1,7 +1,7 @@
 local localplr = game:GetService("Players").LocalPlayer
 local RunService = game:GetService("RunService")
 
-local assets = game.ReplicatedStorage.fihassets
+local assets = game:GetObjects("rbxassetid://96560131262043")[1]
 local fih = assets.Fihs:GetChildren()
 
 local animators = setmetatable({},{__mode = "k"})
