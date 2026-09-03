@@ -1,7 +1,7 @@
 local localplr = game:GetService("Players").LocalPlayer
 local RunService = game:GetService("RunService")
 
-local assets = game:GetObjects("rbxassetid://96560131262043")[1]
+local assets = game.ReplicatedStorage.fihassets
 local fih = assets.Fihs:GetChildren()
 
 local animators = setmetatable({},{__mode = "k"})
@@ -375,7 +375,7 @@ local function loadfih(chr)
 			v.LocalTransparencyModifier = 1
 		end
 	end
-	
+
 	local plr = game.Players:GetPlayerFromCharacter(chr)
 	local rnd = Random.new(plr.UserId+1)
 	local plrfih = fih[math.random(1,#fih)]:Clone()
@@ -388,16 +388,19 @@ local function loadfih(chr)
 	weld.C1 = CFrame.new(0, 1, 0) * CFrame.Angles(0, math.rad(90), 0)
 	plrfih.Parent = chr
 	
-	local animatorfihhh = animator(plrfih)
-	animatorfihhh:LoadAnimation(assets.Swim):Play(.1, 1, 1)
-	
+	task.spawn(function()
+		local animatorfihhh = animator(plrfih)
+		animatorfihhh:LoadAnimation(assets.Swim):Play(.1, 1, 1)
+	end)
 end
 local function LoadFihStuff(plr)
 	local chr = plr.Character or plr.CharacterAdded:Wait()
 	plr.CharacterAdded:Connect(loadfih)
-	loadfih(chr)
+	task.spawn(loadfih, chr)
 end
 
 for _,v in game.Players:GetPlayers() do
-	LoadFihStuff(v)
+	task.spawn(LoadFihStuff, v)
 end
+
+game.Players.PlayerAdded:Connect(LoadFihStuff)
